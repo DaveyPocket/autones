@@ -1,32 +1,19 @@
-PROGRAM    = autones
+# Makefile for recnes
+SER = 40:21	#Last digits of serial number for programmer
 
-ISPTOOL	   = arduino
-ISPPORT	   = /dev/ttyACM0
-ISPSPEED   = 115200
-MCU_TARGET = atmega328p
+all: main.out main.hex mkii
 
-CC = avr-g++
-AVRDUDE = avrdude
-OBJCOPY = avr-objcopy
-OBJDUMP = avr-objdump
+main.out: main.S
+	avr-gcc -o main.out -mmcu=atmega644 -Wall main.S
 
-CFLAGS = -Wall -O2 -DF_CPU=16000000UL
+main.hex: main.out
+	avr-objcopy -v -O ihex main.out main.hex
 
-all: isp clean
+fuse:
+	sudo avrdude -p m644 -c avrispmkii -P usb:$(SER) -u -U lfuse:w:0xee:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 
-isp: $(PROGRAM).hex
-	sudo avrdude -V -F -c $(ISPTOOL) -p $(MCU_TARGET) -P $(ISPPORT) -b $(ISPSPEED) -U flash:w:$<
-
-%.hex: %.elf
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
-
-%.elf: %.c
-	$(CC) $(CFLAGS) -mmcu=$(MCU_TARGET) -I flash:w:$(PROGRAM).hex -o $@ $<
-
-%.objdump: %.elf
-	$(OBJDUMP) -d $< > $@
+mkii:
+	sudo avrdude -p m644 -c avrispmkii -P usb:$(SER) -u -U flash:w:main.hex
 
 clean:
-	rm -rf *.objdump *.elf *.hex
-
-.PHONY: all clean isp
+	rm *.out *.hex

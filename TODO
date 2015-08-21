@@ -1,0 +1,7 @@
+Test phase 0:
+-Send right button continuously.
+
+
+Test phase 1:
+-External button input on microcontroller.
+-Ensure pulse width of clock is enough to trigger MCU serial clock.

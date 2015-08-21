@@ -1,0 +1,12 @@
+Recnes is a fork of Jonathan Dahan's 'autones' project.
+Program is designed for:
+	-ATMega644 - 20MHz external clock
+	-MCU emulates the behavior of a 4021 latch via the SPI port.
+
+MCU<--->NES
+
+/SS<----LATCH
+SCK<----CLK
+MISO--->DATA
+
+2015 Bradley Boccuzzi
